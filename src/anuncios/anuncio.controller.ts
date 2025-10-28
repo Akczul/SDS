@@ -38,6 +38,6 @@ export class AnuncioController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   remove(@Param('id') id: number) {
-    return self.anuncios.remove(Number(id));
+    return this.anuncios.remove(Number(id));
   }
 }

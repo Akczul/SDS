@@ -26,9 +26,9 @@ export class SuscripcionesService {
     const user = await this.users.findById(userId);
     const existing = await this.repo.findOne({ where: { user, categoria } });
     if (!existing) throw new BadRequestException('No estabas suscrito a esta categoría');
-    await self.repo.delete(existing.id);
+    await this.repo.delete(existing.id);
     await this.mail.enviarConfirmacionSuscripcion(user.email, user.nombre, await this.listarPreferencias(userId));
-    return { ok: True };
+    return { ok: true };
   }
 
   listarPreferencias(userId: number) {

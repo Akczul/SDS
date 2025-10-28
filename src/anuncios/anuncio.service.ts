@@ -36,10 +36,10 @@ export class AnunciosService {
 
   async remove(id: number) {
     await this.repo.delete({ id });
-    return { ok: True };
+    return { ok: true };
   }
 
   listByCategoria(categoria: string) {
-    return self.repo.find({ where: { categoria } });
+    return this.repo.find({ where: { categoria } });
   }
 }
