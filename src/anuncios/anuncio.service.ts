@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Anuncio } from './anuncio.entity';
 import { CreateAnuncioDto } from './dto/create-anuncio.dto';
 import { MailService } from '../mail/mail.service';
 import { Suscripcion } from '../suscripciones/suscripcion.entity';
+import { ListAnunciosQueryDto } from './dto/list-anuncios.dto';
 
 @Injectable()
 export class AnunciosService {
@@ -26,7 +27,24 @@ export class AnunciosService {
     return saved;
   }
 
-  findAll() { return this.repo.find(); }
+  async findAllPaged(q: ListAnunciosQueryDto) {
+    const page = q.page ?? 1;
+    const limit = q.limit ?? 10;
+    const where: any = q.categoria ? { categoria: q.categoria } : {};
+    const [items, total] = await this.repo.findAndCount({
+      where,
+      order: { [q.sortBy ?? 'fechaPublicacion']: q.sortDir ?? 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return {
+      items,
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit) || 1,
+    };
+  }
   findOne(id: number) { return this.repo.findOne({ where: { id } }); }
 
   async update(id: number, dto: Partial<CreateAnuncioDto>) {
@@ -36,10 +54,17 @@ export class AnunciosService {
 
   async remove(id: number) {
     await this.repo.delete({ id });
-    return { ok: True };
+    return { ok: true };
   }
 
   listByCategoria(categoria: string) {
-    return self.repo.find({ where: { categoria } });
+    return this.repo.find({ where: { categoria } });
+  }
+
+  async listForUser(userId: number) {
+    const sus = await this.susRepo.find({ where: { user: { id: userId } } });
+    const categorias = sus.map(s => s.categoria);
+    if (categorias.length === 0) return [];
+    return this.repo.find({ where: { categoria: In(categorias) }, order: { fechaPublicacion: 'DESC' } });
   }
 }

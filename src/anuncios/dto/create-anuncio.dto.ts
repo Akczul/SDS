@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class CreateAnuncioDto {
-  @IsString() @IsNotEmpty() titulo: string;
-  @IsString() @IsNotEmpty() contenido: string;
-  @IsString() @IsNotEmpty() categoria: string;
+  @IsString() @IsNotEmpty() @MinLength(3) @MaxLength(100) titulo: string;
+  @IsString() @IsNotEmpty() @MinLength(1) @MaxLength(5000) contenido: string;
+  @IsString() @IsNotEmpty() @MinLength(3) @MaxLength(50) categoria: string;
 }

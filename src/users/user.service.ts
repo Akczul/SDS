@@ -12,6 +12,14 @@ export class UsersService {
     return this.repo.findOne({ where: [{ email: identifier }, { nombreUsuario: identifier }] });
   }
 
+  async findByEmail(email: string) {
+    return this.repo.findOne({ where: { email } });
+  }
+
+  async findByUsername(nombreUsuario: string) {
+    return this.repo.findOne({ where: { nombreUsuario } });
+  }
+
   async findById(id: number) {
     const user = await this.repo.findOne({ where: { id } });
     if (!user) throw new NotFoundException('Usuario no encontrado');

@@ -1,8 +1,10 @@
+import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import * as hbs from 'handlebars';
-
+@Injectable()
 export class MailService {
   private transporter: nodemailer.Transporter;
+  private readonly logger = new Logger(MailService.name);
 
   constructor() {
     this.transporter = nodemailer.createTransport({
@@ -17,15 +19,25 @@ export class MailService {
   }
 
   async enviarNuevoAnuncio(to: string, nombre: string, anuncio: any) {
-    const subject = `Nuevo anuncio en ${anuncio.categoria}: ${anuncio.titulo}`;
-    const html = this.renderTemplateNuevoAnuncio(nombre, anuncio);
-    return this.transporter.sendMail({ to, subject, html, text: this.strip(html), from: process.env.MAIL_USER });
+    try {
+      const subject = `Nuevo anuncio en ${anuncio.categoria}: ${anuncio.titulo}`;
+      const html = this.renderTemplateNuevoAnuncio(nombre, anuncio);
+      return await this.transporter.sendMail({ to, subject, html, text: this.strip(html), from: process.env.MAIL_USER });
+    } catch (err) {
+      this.logger.warn(`Fallo enviando correo de nuevo anuncio a ${to}: ${String(err)}`);
+      return undefined;
+    }
   }
 
   async enviarConfirmacionSuscripcion(to: string, nombre: string, preferencias: any[]) {
-    const subject = 'Tus suscripciones han sido actualizadas';
-    const html = this.renderTemplateConfirmacion(nombre, preferencias);
-    return this.transporter.sendMail({ to, subject, html, text: this.strip(html), from: process.env.MAIL_USER });
+    try {
+      const subject = 'Tus suscripciones han sido actualizadas';
+      const html = this.renderTemplateConfirmacion(nombre, preferencias);
+      return await this.transporter.sendMail({ to, subject, html, text: this.strip(html), from: process.env.MAIL_USER });
+    } catch (err) {
+      this.logger.warn(`Fallo enviando correo de confirmación a ${to}: ${String(err)}`);
+      return undefined;
+    }
   }
 
   private renderTemplateNuevoAnuncio(nombre: string, anuncio: any) {

@@ -9,8 +9,8 @@ export class AuthService {
   constructor(private users: UsersService, private jwt: JwtService) {}
 
   async register(dto: RegisterDto) {
-    const existsEmail = await this.users.findByEmailOrUsername(dto.email);
-    const existsUser = await this.users.findByEmailOrUsername(dto.nombreUsuario);
+  const existsEmail = await this.users.findByEmail(dto.email);
+  const existsUser = await this.users.findByUsername(dto.nombreUsuario);
     if (existsEmail || existsUser) throw new BadRequestException('Email o nombreUsuario ya están en uso');
     const passwordHash = await bcrypt.hash(dto.password, 10);
     const created = await this.users.create({
@@ -20,7 +20,7 @@ export class AuthService {
       email: dto.email,
       passwordHash,
       role: dto.role,
-      activo: false,
+      activo: true,
     });
     return { id: created.id, email: created.email, nombreUsuario: created.nombreUsuario };
   }
