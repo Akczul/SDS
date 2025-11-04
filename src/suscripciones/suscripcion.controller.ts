@@ -19,12 +19,12 @@ export class SuscripcionController {
   @Post()
   @ApiBearerAuth()
   add(@Req() req: any, @Body() dto: CreateSuscripcionDto) {
-    return this.sus.suscribirse(req.user.id, dto.categoria);
+    return this.sus.suscribirse(req.user.id, dto.categoriaId);
   }
 
   @Delete()
   @ApiBearerAuth()
   remove(@Req() req: any, @Body() dto: CreateSuscripcionDto) {
-    return this.sus.desuscribirse(req.user.id, dto.categoria);
+    return this.sus.desuscribirse(req.user.id, dto.categoriaId);
   }
 }

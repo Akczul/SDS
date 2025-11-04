@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Categoria } from '../categorias/categoria.entity';
 
 @Entity('anuncios')
 export class Anuncio {
@@ -11,8 +12,8 @@ export class Anuncio {
   @Column({ type: 'text' })
   contenido: string;
 
-  @Column({ type: 'varchar', length: 50 })
-  categoria: string;
+  @ManyToOne(() => Categoria, { eager: true, nullable: false, onDelete: 'RESTRICT' })
+  categoria: Categoria;
 
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   fechaPublicacion: Date;

@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, Re
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AnunciosService } from './anuncio.service';
 import { CreateAnuncioDto } from './dto/create-anuncio.dto';
+import { UpdateAnuncioDto } from './dto/update-anuncio.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../common/roles.decorator';
 import { RolesGuard } from '../common/roles.guard';
@@ -41,7 +42,7 @@ export class AnuncioController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @ApiBearerAuth()
-  update(@Param('id') id: number, @Body() dto: Partial<CreateAnuncioDto>) {
+  update(@Param('id') id: number, @Body() dto: UpdateAnuncioDto) {
     return this.anuncios.update(Number(id), dto);
   }
 
