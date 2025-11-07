@@ -5,11 +5,17 @@ import { SuscripcionController } from './suscripcion.controller';
 import { SuscripcionesService } from './suscripcion.service';
 import { UsersModule } from '../users/user.module';
 import { MailModule } from '../mail/mail.module';
+import { Categoria } from '../categorias/categoria.entity';  
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Suscripcion]), UsersModule, MailModule],
+  imports: [
+    TypeOrmModule.forFeature([Suscripcion, Categoria]),  
+    UsersModule,
+    MailModule,
+  ],
   controllers: [SuscripcionController],
   providers: [SuscripcionesService],
-  exports: [TypeOrmModule],
+  exports: [SuscripcionesService],  
 })
 export class SuscripcionesModule {}
+

@@ -12,10 +12,10 @@ import { ListAnunciosQueryDto } from './dto/list-anuncios.dto';
 @Injectable()
 export class AnunciosService {
   constructor(
-    @InjectRepository(Anuncio) private repo: Repository<Anuncio>,
-    @InjectRepository(Suscripcion) private susRepo: Repository<Suscripcion>,
-    @InjectRepository(Categoria) private catRepo: Repository<Categoria>,
-    private mail: MailService,
+    @InjectRepository(Anuncio) private readonly repo: Repository<Anuncio>,
+    @InjectRepository(Suscripcion) private readonly susRepo: Repository<Suscripcion>,
+    @InjectRepository(Categoria) private readonly catRepo: Repository<Categoria>, 
+    private readonly mail: MailService,
   ) {}
 
   async create(dto: CreateAnuncioDto) {
@@ -84,10 +84,14 @@ export class AnunciosService {
   }
 
   async listForUser(userId: number) {
-    const sus = await this.susRepo.find({ where: { user: { id: userId } } });
-    const categorias = sus.map(s => s.categoria);
-    if (categorias.length === 0) return [];
-    // Buscar anuncios por nombre de categoría (temporal, hasta migrar suscripciones a FK)
-    return this.repo.find({ where: { categoria: In(categorias) }, order: { fechaPublicacion: 'DESC' }, relations: ['categoria'] });
+  const sus = await this.susRepo.find({ where: { user: { id: userId } } });
+  if (!sus.length) return [];
+
+  const categoriaIds = sus.map(s => s.categoria.id);
+  return this.repo.find({
+    where: { categoria: { id: In(categoriaIds) } }, // Filtro de id's
+    order: { fechaPublicacion: 'DESC' },
+    relations: ['categoria'],
+  });
   }
 }

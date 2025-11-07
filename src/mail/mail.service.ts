@@ -18,27 +18,61 @@ export class MailService {
     });
   }
 
-  async enviarNuevoAnuncio(to: string, nombre: string, anuncio: any) {
-    try {
-      const subject = `Nuevo anuncio en ${anuncio.categoria}: ${anuncio.titulo}`;
-      const html = this.renderTemplateNuevoAnuncio(nombre, anuncio);
-      return await this.transporter.sendMail({ to, subject, html, text: this.strip(html), from: process.env.MAIL_USER });
-    } catch (err) {
-      this.logger.warn(`Fallo enviando correo de nuevo anuncio a ${to}: ${String(err)}`);
-      return undefined;
-    }
-  }
+  // 📨 Notifica cuando se publica un nuevo anuncio
+async enviarNuevoAnuncio(
+  to: string,
+  nombre: string,
+  anuncio: { titulo: string; categoria: { nombre: string }; contenido: string },
+) {
+  const subject = `Nuevo anuncio en ${anuncio.categoria.nombre}: ${anuncio.titulo}`;
+  const html = `
+    <div style="font-family: Arial, sans-serif;">
+      <h2>Hola ${nombre},</h2>
+      <p>Se ha publicado un nuevo anuncio en la categoría <strong>${anuncio.categoria.nombre}</strong>.</p>
+      <h3>${anuncio.titulo}</h3>
+      <p>${anuncio.contenido}</p>
+      <p>Visítanos en <a href="${process.env.APP_URL}">${process.env.APP_URL}</a></p>
+      <hr>
+      <small>Este correo fue enviado automáticamente por el Sistema de Anuncios y Suscripciones.</small>
+    </div>
+  `;
 
-  async enviarConfirmacionSuscripcion(to: string, nombre: string, preferencias: any[]) {
-    try {
-      const subject = 'Tus suscripciones han sido actualizadas';
-      const html = this.renderTemplateConfirmacion(nombre, preferencias);
-      return await this.transporter.sendMail({ to, subject, html, text: this.strip(html), from: process.env.MAIL_USER });
-    } catch (err) {
-      this.logger.warn(`Fallo enviando correo de confirmación a ${to}: ${String(err)}`);
-      return undefined;
-    }
-  }
+  await this.transporter.sendMail({
+    from: process.env.MAIL_USER,
+    to,
+    subject,
+    text: `Nuevo anuncio: ${anuncio.titulo} en la categoría ${anuncio.categoria.nombre}`,
+    html,
+  });
+}
+
+// 📨 Notifica cuando un usuario actualiza o confirma sus suscripciones
+async enviarConfirmacionSuscripcion(
+  to: string,
+  nombre: string,
+  preferencias: { categoria: { nombre: string } }[],
+) {
+  const categorias = preferencias.map((p) => p.categoria.nombre).join(', ');
+  const subject = `Preferencias de suscripción actualizadas`;
+  const html = `
+    <div style="font-family: Arial, sans-serif;">
+      <h2>Hola ${nombre},</h2>
+      <p>Has actualizado tus preferencias de suscripción.</p>
+      <p><strong>Categorías seleccionadas:</strong> ${categorias}</p>
+      <p>Recibirás notificaciones cuando se publiquen nuevos anuncios en estas categorías.</p>
+      <hr>
+      <small>Este correo fue enviado automáticamente por el Sistema de Anuncios y Suscripciones.</small>
+    </div>
+  `;
+
+  await this.transporter.sendMail({
+    from: process.env.MAIL_USER,
+    to,
+    subject,
+    text: `Tus preferencias de suscripción han sido actualizadas. Categorías: ${categorias}`,
+    html,
+  });
+}
 
   private renderTemplateNuevoAnuncio(nombre: string, anuncio: any) {
     const tpl = `<h2>Hola {{nombre}},</h2>
