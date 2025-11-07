@@ -5,7 +5,7 @@ import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { UsersService } from '../users/user.service';
 import { ThrottlerGuard } from '@nestjs/throttler';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -14,12 +14,14 @@ export class AuthController {
 
   @Post('register')
   @UseGuards(ThrottlerGuard)
+  @ApiOperation({ summary: 'Registrar un nuevo usuario' })
   register(@Body() dto: RegisterDto) {
     return this.auth.register(dto);
   }
 
   @Post('login')
   @UseGuards(ThrottlerGuard)
+  @ApiOperation({ summary: 'Iniciar sesión con email o nombre de usuario' })
   login(@Body() dto: LoginDto) {
     return this.auth.login(dto.identifier, dto.password);
   }
@@ -27,11 +29,13 @@ export class AuthController {
   @Get('perfil')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  perfil(@Req() req: any) {
-    // Devolver todos los datos del usuario autenticado excepto la contraseña
-    return this.users.findById(req.user.id).then((user) => {
-      const { passwordHash, ...safe } = user as any;
-      return safe;
-    });
+  @ApiOperation({ summary: 'Obtener el perfil del usuario autenticado' })
+  async perfil(@Req() req: any) {
+    const user = await this.users.findById(req.user.id);
+    const { passwordHash, ...safeUser } = user as any;
+    return {
+      ...safeUser,
+      message: 'Perfil obtenido correctamente',
+    };
   }
 }

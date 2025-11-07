@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, Req } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, Req, ParseIntPipe } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AnunciosService } from './anuncio.service';
 import { CreateAnuncioDto } from './dto/create-anuncio.dto';
 import { UpdateAnuncioDto } from './dto/update-anuncio.dto';
@@ -14,26 +14,30 @@ export class AnuncioController {
   constructor(private anuncios: AnunciosService) {}
 
   @Get()
+  @ApiOperation({ summary: 'Listar todos los anuncios con paginación (público)' })
   getAll(@Query() q: ListAnunciosQueryDto) {
     return this.anuncios.findAllPaged(q);
   }
 
-  @Get(':id')
-  getOne(@Param('id') id: number) {
-    return this.anuncios.findOne(Number(id));
-  }
-
-  @Get('mis')
+  @Get('mis-anuncios')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtener anuncios de categorías suscritas por el usuario autenticado' })
   mis(@Req() req: any) {
     return this.anuncios.listForUser(req.user.id);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Obtener un anuncio por ID (público)' })
+  getOne(@Param('id', ParseIntPipe) id: number) {
+    return this.anuncios.findOne(id);
   }
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @ApiBearerAuth()
+  @ApiOperation({ summary: 'Crear un nuevo anuncio (solo admin)' })
   create(@Body() dto: CreateAnuncioDto) {
     return this.anuncios.create(dto);
   }
@@ -42,15 +46,17 @@ export class AnuncioController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @ApiBearerAuth()
-  update(@Param('id') id: number, @Body() dto: UpdateAnuncioDto) {
-    return this.anuncios.update(Number(id), dto);
+  @ApiOperation({ summary: 'Actualizar un anuncio (solo admin)' })
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateAnuncioDto) {
+    return this.anuncios.update(id, dto);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @ApiBearerAuth()
-  remove(@Param('id') id: number) {
-    return this.anuncios.remove(Number(id));
+  @ApiOperation({ summary: 'Eliminar un anuncio (solo admin)' })
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.anuncios.remove(id);
   }
 }

@@ -11,7 +11,9 @@ import { MailModule } from './mail/mail.module';
 import { User } from './users/user.entity';
 import { Anuncio } from './anuncios/anuncio.entity';
 import { Suscripcion } from './suscripciones/suscripcion.entity';
+import { Categoria } from './categorias/categoria.entity';
 import { HealthModule } from './health/health.module';
+import { CategoriaModule } from './categorias/categoria.module';
 
 @Module({
   imports: [
@@ -42,7 +44,7 @@ import { HealthModule } from './health/health.module';
         username: process.env.DB_USER,
         password: process.env.DB_PASS,
         database: process.env.DB_NAME,
-        entities: [User, Anuncio, Suscripcion],
+        entities: [User, Anuncio, Suscripcion, Categoria],
         synchronize: true,
       }),
     }),
@@ -50,6 +52,7 @@ import { HealthModule } from './health/health.module';
     UsersModule,
     AnunciosModule,
     SuscripcionesModule,
+    CategoriaModule,
     MailModule,
     HealthModule,
   ],

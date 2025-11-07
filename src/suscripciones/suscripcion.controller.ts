@@ -2,28 +2,29 @@ import { Body, Controller, Delete, Get, Post, UseGuards, Req } from '@nestjs/com
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { SuscripcionesService } from './suscripcion.service';
 import { CreateSuscripcionDto } from './dto/create-suscripcion.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('suscripciones')
 @Controller('suscripciones')
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class SuscripcionController {
   constructor(private sus: SuscripcionesService) {}
 
   @Get()
-  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtener las suscripciones del usuario autenticado' })
   mis(@Req() req: any) {
     return this.sus.listarPreferencias(req.user.id);
   }
 
   @Post()
-  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Suscribirse a una categoría' })
   add(@Req() req: any, @Body() dto: CreateSuscripcionDto) {
     return this.sus.suscribirse(req.user.id, dto.categoriaId);
   }
 
   @Delete()
-  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Desuscribirse de una categoría' })
   remove(@Req() req: any, @Body() dto: CreateSuscripcionDto) {
     return this.sus.desuscribirse(req.user.id, dto.categoriaId);
   }
