@@ -45,7 +45,7 @@ import { CategoriaModule } from './categorias/categoria.module';
         password: process.env.DB_PASS,
         database: process.env.DB_NAME,
         entities: [User, Anuncio, Suscripcion, Categoria],
-        synchronize: true,
+        synchronize: false, // Cambiado a false para evitar conflictos con Foreign Keys
       }),
     }),
     AuthModule,
