@@ -34,14 +34,7 @@ Revisar a fondo el proyecto NestJS, parte por parte, módulo por módulo, verifi
 | **Documentación** | ✅ COMPLETADO | 10 archivos MD creados |
 | **Compilación** | ✅ COMPLETADO | 0 errores TypeScript |
 
-### ⚠️ PENDIENTE (Configuración externa)
 
-| Item | Estado | Acción requerida |
-|------|--------|------------------|
-| **Base de datos** | ⚠️ REQUIERE MIGRACIÓN | Ejecutar `migration-fix-schema.sql` |
-| **Email .env** | ⚠️ REQUIERE CONFIG | Configurar MAIL_USER y MAIL_PASS |
-
----
 
 ## 🔍 REVISIÓN DETALLADA POR MÓDULO
 

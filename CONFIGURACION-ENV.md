@@ -15,7 +15,7 @@ DB_HOST=localhost          # ✅ CORRECTO
 DB_PORT=3306              # ✅ CORRECTO
 DB_USER=root              # ✅ CORRECTO
 DB_PASS=changeme          # ✅ CORRECTO (para desarrollo local)
-DB_NAME=sistema_anuncios  # ✅ CORRECTO
+DB_NAME=sistema_anuncios_suscripciones  # ✅ CORRECTO
 ```
 
 **Estado:** ✅ **CORRECTO** - La configuración coincide con tu instalación de MySQL.
